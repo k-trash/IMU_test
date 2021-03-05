@@ -112,7 +112,10 @@ int main(void)
 	  gyr[0] = (val[6]<<8) | val[7];
 	  gyr[1] = (val[8]<<8) | val[9];
 	  gyr[2] = (val[10]<<8)| val[11];
-	  printf("%i %i %i %i %i %i\r\n", acc[0], acc[1], acc[2], gyr[0], gyr[1], gyr[2]);
+	  gyr[0] -= 120;
+	  gyr[1] += 100;
+	  gyr[2] -= 100;
+	  printf("%i\t%i\t%i\t%i\t%i\t%i\r\n", acc[0], acc[1], acc[2], gyr[0], gyr[1], gyr[2]);
 	  HAL_Delay(100);
     /* USER CODE END WHILE */
 
