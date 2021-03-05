@@ -61,6 +61,7 @@ int _write(int file, char *ptr, int len);
 /* USER CODE BEGIN 0 */
 uint8_t ret[1] = {0};
 
+uint8_t send_data[8] = {0};
 int16_t acc[3];
 int16_t gyr[3];
 uint8_t val[14];
@@ -106,7 +107,7 @@ int main(void)
   while (1)
   {
 	  HAL_I2C_Mem_Read(&hi2c1, IMU<<1, 0x3b,I2C_MEMADD_SIZE_8BIT,(uint8_t*)val ,14,100);
-	  acc[0] = (val[0]<<8) | val[1];
+	  /*acc[0] = (val[0]<<8) | val[1];
 	  acc[1] = (val[2]<<8) | val[3];
 	  acc[2] = (val[4]<<8) | val[5];
 	  gyr[0] = (val[6]<<8) | val[7];
@@ -115,7 +116,8 @@ int main(void)
 	  gyr[0] -= 120;
 	  gyr[1] += 100;
 	  gyr[2] -= 100;
-	  printf("%i\t%i\t%i\t%i\t%i\t%i\r\n", acc[0], acc[1], acc[2], gyr[0], gyr[1], gyr[2]);
+	  printf("%i\t%i\t%i\t%i\t%i\t%i\r\n", acc[0], acc[1], acc[2], gyr[0], gyr[1], gyr[2]);*/
+	  send_val[0];
 	  HAL_Delay(100);
     /* USER CODE END WHILE */
 
