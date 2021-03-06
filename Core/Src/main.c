@@ -63,7 +63,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *UartHandle);
 uint8_t ret[1] = {0};
 uint8_t rx_data = 0;
 
-uint8_t send_data[8] = {0};
+uint8_t send_data[6] = {0};
 int16_t acc[3];
 int16_t gyr[3];
 uint8_t val[14];
@@ -109,7 +109,7 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-	  HAL_I2C_Mem_Read(&hi2c1, IMU<<1, 0x3b,I2C_MEMADD_SIZE_8BIT,(uint8_t*)val ,14,100);
+	  //HAL_I2C_Mem_Read(&hi2c1, IMU<<1, 0x3b,I2C_MEMADD_SIZE_8BIT,(uint8_t*)val ,14,100);
 	  /*acc[0] = (val[0]<<8) | val[1];
 	  acc[1] = (val[2]<<8) | val[3];
 	  acc[2] = (val[4]<<8) | val[5];
@@ -120,7 +120,7 @@ int main(void)
 	  gyr[1] += 100;
 	  gyr[2] -= 100;
 	  printf("%i\t%i\t%i\t%i\t%i\t%i\r\n", acc[0], acc[1], acc[2], gyr[0], gyr[1], gyr[2]);*/
-	  send_data[0];
+	  //send_data[0];
 	  HAL_Delay(100);
     /* USER CODE END WHILE */
 
@@ -282,6 +282,14 @@ int _write(int file, char *ptr, int len){
 
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *UartHandle){
 	HAL_UART_Receive_IT(&huart2, &rx_data, 1);
+
+	HAL_I2C_Mem_Read(&hi2c1, IMU<<1, 0x3b,I2C_MEMADD_SIZE_8BIT,(uint8_t*)val ,14,100);
+
+	for(int i=0;i<6;i++){
+		send_data[i] = val[i<<1]<<8 | val[(i<<1)+1];
+	}
+
+	HAL_UART_Transmit(&huart2, (uint8_t *)send_data, sizeof(send_data), 100);
 }
 /* USER CODE END 4 */
 
