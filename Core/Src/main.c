@@ -55,11 +55,13 @@ static void MX_USART2_UART_Init(void);
 static void MX_I2C1_Init(void);
 /* USER CODE BEGIN PFP */
 int _write(int file, char *ptr, int len);
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef *UartHandle);
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 uint8_t ret[1] = {0};
+uint8_t rx_data = 0;
 
 uint8_t send_data[8] = {0};
 int16_t acc[3];
@@ -94,6 +96,7 @@ int main(void)
   /* USER CODE END SysInit */
 
   /* Initialize all configured peripherals */
+  HAL_UART_Receive_IT(&huart2, &rx_data, 1);
   MX_GPIO_Init();
   MX_USART2_UART_Init();
   MX_I2C1_Init();
@@ -275,6 +278,10 @@ static void MX_GPIO_Init(void)
 int _write(int file, char *ptr, int len){
 	HAL_UART_Transmit(&huart2,(uint8_t *)ptr,len,10);
 	return len;
+}
+
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef *UartHandle){
+	HAL_UART_Receive_IT(&huart2, &rx_data, 1);
 }
 /* USER CODE END 4 */
 
