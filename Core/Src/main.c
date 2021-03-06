@@ -117,7 +117,7 @@ int main(void)
 	  gyr[1] += 100;
 	  gyr[2] -= 100;
 	  printf("%i\t%i\t%i\t%i\t%i\t%i\r\n", acc[0], acc[1], acc[2], gyr[0], gyr[1], gyr[2]);*/
-	  send_val[0];
+	  send_data[0];
 	  HAL_Delay(100);
     /* USER CODE END WHILE */
 
