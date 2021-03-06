@@ -96,13 +96,13 @@ int main(void)
   /* USER CODE END SysInit */
 
   /* Initialize all configured peripherals */
-  HAL_UART_Receive_IT(&huart2, &rx_data, 1);
   MX_GPIO_Init();
   MX_USART2_UART_Init();
   MX_I2C1_Init();
   /* USER CODE BEGIN 2 */
   HAL_I2C_Mem_Write(&hi2c1,IMU<<1,0x6b,I2C_MEMADD_SIZE_8BIT,(uint8_t*)ret,0x01,100);
   HAL_I2C_Mem_Write(&hi2c1,IMU<<1,0x1c,I2C_MEMADD_SIZE_8BIT,(uint8_t*)ret,0x01,100);
+  HAL_UART_Receive_IT(&huart2, &rx_data, 1);
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -120,7 +120,6 @@ int main(void)
 	  gyr[1] += 100;
 	  gyr[2] -= 100;
 	  printf("%i\t%i\t%i\t%i\t%i\t%i\r\n", acc[0], acc[1], acc[2], gyr[0], gyr[1], gyr[2]);*/
-	  //send_data[0];
 	  HAL_Delay(100);
     /* USER CODE END WHILE */
 
