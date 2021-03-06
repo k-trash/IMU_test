@@ -283,7 +283,7 @@ int _write(int file, char *ptr, int len){
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *UartHandle){
 	HAL_UART_Receive_IT(&huart2, &rx_data, 1);
 
-	HAL_I2C_Mem_Read(&hi2c1, IMU<<1, 0x3b,I2C_MEMADD_SIZE_8BIT,(uint8_t*)val ,14,100);
+	HAL_I2C_Mem_Read(&hi2c1, IMU<<1, 0x3b,I2C_MEMADD_SIZE_8BIT,(uint8_t*)val ,14, 100);
 
 	for(int i=0;i<6;i++){
 		send_data[i] = val[i<<1]<<8 | val[(i<<1)+1];
