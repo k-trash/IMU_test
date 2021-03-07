@@ -63,13 +63,13 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *UartHandle);
 /* USER CODE BEGIN 0 */
 uint8_t ret[1] = {0};
 uint8_t rx_data = 0;
+uint8_t flag_read[1] = {0};
+uint8_t mag[7] = {0};
 
 uint8_t send_data[18] = {0};
 int16_t acc[3];
 int16_t gyr[3];
 uint8_t val[14];
-uint8_t flag_read[1] = {0};
-uint8_t mag[7] = {0};
 /* USER CODE END 0 */
 
 /**
