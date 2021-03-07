@@ -310,7 +310,6 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *UartHandle){
 	for(int i=0;i<6;i++){
 		send_data[12+i] = mag[i];
 	}
-	send_data[17] = flag_read[0];
 
 	HAL_UART_Transmit(&huart2, (uint8_t *)send_data, sizeof(send_data), 100);
 }
