@@ -37,6 +37,7 @@
 /* Private macro -------------------------------------------------------------*/
 /* USER CODE BEGIN PM */
 #define IMU 0x68
+#define AK8963 0x0c
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
@@ -63,10 +64,12 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *UartHandle);
 uint8_t ret[1] = {0};
 uint8_t rx_data = 0;
 
-uint8_t send_data[6] = {0};
+uint8_t send_data[18] = {0};
 int16_t acc[3];
 int16_t gyr[3];
 uint8_t val[14];
+uint8_t flag_read[1] = {0};
+uint8_t mag[7] = {0};
 /* USER CODE END 0 */
 
 /**
@@ -100,15 +103,16 @@ int main(void)
   MX_USART2_UART_Init();
   MX_I2C1_Init();
   /* USER CODE BEGIN 2 */
-  HAL_I2C_Mem_Write(&hi2c1,IMU<<1,0x6b,I2C_MEMADD_SIZE_8BIT,(uint8_t*)ret,0x01,100);
-  HAL_I2C_Mem_Write(&hi2c1,IMU<<1,0x1c,I2C_MEMADD_SIZE_8BIT,(uint8_t*)ret,0x01,100);
+  HAL_I2C_Mem_Write(&hi2c1, IMU<<1, 0x6b, I2C_MEMADD_SIZE_8BIT, (uint8_t*)ret, 0x01, 100);
+  HAL_I2C_Mem_Write(&hi2c1, IMU<<1, 0x1c, I2C_MEMADD_SIZE_8BIT, (uint8_t*)ret, 0x01, 100);
+  HAL_I2C_Mem_Write(&hi2c1, AK8963<<1, 0x37, I2C_MEMADD_SIZE_8BIT, (uint8_t*)ret, 0x02, 100);
+  HAL_I2C_Mem_Write(&hi2c1, AK8963<<1, 0x0a, I2C_MEMADD_SIZE_8BIT, (uint8_t*)ret, 0x16, 100);
   HAL_UART_Receive_IT(&huart2, &rx_data, 1);
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-  while (1)
-  {
+  while (1){
 	  //HAL_I2C_Mem_Read(&hi2c1, IMU<<1, 0x3b,I2C_MEMADD_SIZE_8BIT,(uint8_t*)val ,14,100);
 	  /*acc[0] = (val[0]<<8) | val[1];
 	  acc[1] = (val[2]<<8) | val[3];
@@ -121,7 +125,7 @@ int main(void)
 	  gyr[2] -= 100;
 	  printf("%i\t%i\t%i\t%i\t%i\t%i\r\n", acc[0], acc[1], acc[2], gyr[0], gyr[1], gyr[2]);*/
 	  HAL_Delay(100);
-	  HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_5);
+
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -283,10 +287,20 @@ int _write(int file, char *ptr, int len){
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *UartHandle){
 	HAL_UART_Receive_IT(&huart2, &rx_data, 1);
 
-	HAL_I2C_Mem_Read(&hi2c1, IMU<<1, 0x3b,I2C_MEMADD_SIZE_8BIT,(uint8_t*)val ,14, 100);
+	HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_5);
 
+	HAL_I2C_Mem_Read(&hi2c1, IMU<<1, 0x3b, I2C_MEMADD_SIZE_8BIT, (uint8_t*)val ,14, 100);
+	HAL_I2C_Mem_Read(&hi2c1, AK8963<<1, 0x02, I2C_MEMADD_SIZE_8BIT, (uint8_t*)flag_read, 1, 100);
+
+	if(flag_read[0] & 0x01){
+		HAL_I2C_Mem_Read(&hi2c1, AK8963<<1, 0x03, I2C_MENADD_SIZE_8BIT, (uint8_t*)mag, 7, 100);
+	}
+
+	for(int i=0;i<12;i++){
+		send_data[i] = val[i];
+	}
 	for(int i=0;i<6;i++){
-		send_data[i] = val[i<<1]<<8 | val[(i<<1)+1];
+		send_data[12+i] = mag[i];
 	}
 
 	HAL_UART_Transmit(&huart2, (uint8_t *)send_data, sizeof(send_data), 100);
