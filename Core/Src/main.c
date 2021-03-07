@@ -104,8 +104,9 @@ int main(void)
   MX_I2C1_Init();
   /* USER CODE BEGIN 2 */
   HAL_I2C_Mem_Write(&hi2c1, IMU<<1, 0x6b, I2C_MEMADD_SIZE_8BIT, (uint8_t*)ret, 0x01, 100);
-  HAL_I2C_Mem_Write(&hi2c1, IMU<<1, 0x1c, I2C_MEMADD_SIZE_8BIT, (uint8_t*)ret, 0x01, 100);
-  HAL_I2C_Mem_Write(&hi2c1, AK8963<<1, 0x37, I2C_MEMADD_SIZE_8BIT, (uint8_t*)ret, 0x02, 100);
+  HAL_I2C_Mem_Write(&hi2c1, IMU<<1, 0x1c, I2C_MEMADD_SIZE_8BIT, (uint8_t*)ret, 0x08, 100);
+  HAL_I2C_Mem_Write(&hi2c1, IMU<<1, 0x1b, I2C_MEMADD_SIZE_8BIT, (uint8_t*)ret, 0x08, 100);
+  HAL_I2C_Mem_Write(&hi2c1, IMU<<1, 0x37, I2C_MEMADD_SIZE_8BIT, (uint8_t*)ret, 0x02, 100);
   HAL_I2C_Mem_Write(&hi2c1, AK8963<<1, 0x0a, I2C_MEMADD_SIZE_8BIT, (uint8_t*)ret, 0x16, 100);
   HAL_UART_Receive_IT(&huart2, &rx_data, 1);
   /* USER CODE END 2 */
@@ -292,12 +293,15 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *UartHandle){
 	HAL_I2C_Mem_Read(&hi2c1, IMU<<1, 0x3b, I2C_MEMADD_SIZE_8BIT, (uint8_t*)val ,14, 100);
 	HAL_I2C_Mem_Read(&hi2c1, AK8963<<1, 0x02, I2C_MEMADD_SIZE_8BIT, (uint8_t*)flag_read, 1, 100);
 
-	if(flag_read[0] & 0x01){
-		HAL_I2C_Mem_Read(&hi2c1, AK8963<<1, 0x03, I2C_MENADD_SIZE_8BIT, (uint8_t*)mag, 7, 100);
+	if((flag_read[0] & 0x01)){
+		HAL_I2C_Mem_Read(&hi2c1, AK8963<<1, 0x03, I2C_MEMADD_SIZE_8BIT, (uint8_t*)mag, 7, 100);
 	}
 
-	for(int i=0;i<12;i++){
+	for(int i=0;i<6;i++){
 		send_data[i] = val[i];
+	}
+	for(int i=0;i<6;i++){
+		send_data[6+i] = val[8+i];
 	}
 	for(int i=0;i<6;i++){
 		send_data[12+i] = mag[i];
